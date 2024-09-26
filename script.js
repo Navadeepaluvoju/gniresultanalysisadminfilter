@@ -9,6 +9,7 @@ const filters = {
 
 let teacherData = [];
 
+// Fetch the teacher data from the JSON file
 async function fetchData() {
     try {
         const response = await fetch('teacherData.json');
@@ -81,8 +82,8 @@ function applyFilters() {
             pass = false;
         }
 
-        // Filter by Department
-        if (filters.department && filters.department !== item.Section) {
+        // Filter by Department/Section (allowing "CSE" to match "CSE-1", "CSE-2", etc.)
+        if (filters.department && !item.Section.startsWith(filters.department)) {
             pass = false;
         }
 
@@ -150,7 +151,7 @@ function displayResults(data) {
             <td>${item["Academic Year"]}</td>
             <td>${item["B. Tech. Year"]}</td>
             <td>${item.Sem}</td>
-            <td>${parseFloat(item["% of Pass"]).toFixed(2)}%</td> <!-- Format to two decimal places -->
+            <td>${parseFloat(item["% of Pass"]).toFixed(2)}%</td>
         `;
         table.appendChild(row);
     });
