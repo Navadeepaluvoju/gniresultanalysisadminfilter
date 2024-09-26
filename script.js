@@ -2,14 +2,14 @@ const filters = {
     academicYear: '',
     btechYear: '',
     semester: '',
-    department: '', // Added department filter
-    passComparison: 'equal', // Default comparison type
+    department: '',
+    passComparison: 'equal', 
     passPercentage: ''
 };
 
 let teacherData = [];
 
-// Fetch the teacher data from the JSON file
+// Fetch teacher data from JSON
 async function fetchData() {
     try {
         const response = await fetch('teacherData.json');
@@ -24,6 +24,7 @@ async function fetchData() {
     }
 }
 
+// Populate filter dropdowns
 function populateFilterOptions() {
     const academicYears = [...new Set(teacherData.map(item => item["Academic Year"]))];
     const semesters = [...new Set(teacherData.map(item => item["Sem"]))];
@@ -53,7 +54,7 @@ document.getElementById('applyFilters').addEventListener('click', () => {
     filters.academicYear = document.getElementById('academicYear').value;
     filters.btechYear = document.getElementById('btechYear').value;
     filters.semester = document.getElementById('semester').value;
-    filters.department = document.getElementById('department').value; // Capture department value
+    filters.department = document.getElementById('department').value; 
     filters.passComparison = document.getElementById('passComparison').value;
     filters.passPercentage = document.getElementById('passPercentage').value;
 
@@ -68,7 +69,19 @@ function applyFilters() {
         let pass = true;
 
         // Filter by Academic Year
-        if (filters.academicYear && filters.academicYear !== item["Academic Year"]) {
+        if (filters.academicYear === '3') {
+            // Filter for the last 3 years
+            const last3Years = getLastNYears(3);
+            if (!last3Years.includes(item["Academic Year"])) {
+                pass = false;
+            }
+        } else if (filters.academicYear === '5') {
+            // Filter for the last 5 years
+            const last5Years = getLastNYears(5);
+            if (!last5Years.includes(item["Academic Year"])) {
+                pass = false;
+            }
+        } else if (filters.academicYear && filters.academicYear !== item["Academic Year"]) {
             pass = false;
         }
 
@@ -82,7 +95,7 @@ function applyFilters() {
             pass = false;
         }
 
-        // Filter by Department/Section (allowing "CSE" to match "CSE-1", "CSE-2", etc.)
+        // Filter by Department/Section
         if (filters.department && !item.Section.startsWith(filters.department)) {
             pass = false;
         }
@@ -119,6 +132,26 @@ function applyFilters() {
     displayResults(filteredData);
 }
 
+// Get last N academic years
+function getLastNYears(n) {
+    const currentYear = new Date().getFullYear();
+    const lastNYears = [];
+
+    // Assuming academic year is formatted like "2022-2023"
+    teacherData.forEach(item => {
+        const year = item["Academic Year"];
+        const yearParts = year.split("-");
+        const startYear = parseInt(yearParts[0], 10);
+
+        if (startYear >= currentYear - n) {
+            lastNYears.push(year);
+        }
+    });
+
+    return lastNYears;
+}
+
+// Display results
 function displayResults(data) {
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = ''; // Clear previous results
