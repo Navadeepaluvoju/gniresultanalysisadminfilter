@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Filter</title>
+    <link rel="stylesheet" href="style.css"> <!-- Link to the CSS file -->
+</head>
+<body>
+    <header>
+        <h1 style="text-align: center;color:crimson">Result Analysis with Custom Filters</h1>
+    </header>
+    <main>
+        <h3 style="text-align: center; padding: 20px;font-size: 24px;">Select Filters</h3>
+
+        <!-- Filter Inputs -->
+        <div class="filter-container">
+            <!-- Academic Year Filter -->
+            <div class="filter-section">
+                <label for="academicYear" class="filter-label">Academic Year:</label>
+                <select id="academicYear" class="filter-input">
+                    <option value="">All Years</option>
+                </select>
+            </div>
+
+            
+            <!-- B. Tech. Year Filter -->
+            <div class="filter-section">
+                <label for="btechYear" class="filter-label">B. Tech. Year:</label>
+                <select id="btechYear" class="filter-input">
+                    <option value="">All Years</option>
+                    <option value="I">I</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                </select>
+            </div>
+
+            <!-- Semester Filter -->
+            <div class="filter-section">
+                <label for="semester" class="filter-label">Semester:</label>
+                <select id="semester" class="filter-input">
+                    <option value="">All Semesters</option>
+                </select>
+            </div>
+
+            <!-- Department Filter -->
+            <div class="filter-section">
+                <label for="department" class="filter-label">Department:</label>
+                <select id="department" class="filter-input">
+                    <option value="">All Departments</option>        
+                    <option value="CE">CE</option>
+                    <option value="ME">ME</option>
+                    <option value="EEE">EEE</option>
+                    <option value="ECE">ECE</option>
+                    <option value="CSE">CSE</option>
+                    <option value="IT">IT</option>
+                    <option value="AIML">AIML</option>
+                    <option value="AI&amp;DS">AI&amp;DS</option>
+                    <option value="CS">CS</option>
+                    <option value="IOT">IOT</option>
+                    <option value="DS">DS</option>
+                </select>
+            </div>
+
+            <!-- Pass Percentage Filters -->
+            <div class="filter-section">
+                <label for="passComparison" class="filter-label">Pass Comparison:</label>
+                <select id="passComparison" class="filter-input">
+                    <option value="equal">Equal</option>
+                    <option value="greater">Greater than</option>
+                    <option value="greaterEqual">Greater than and equal to</option>
+                    <option value="less">Less than</option>
+                    <option value="lessEqual">Less than and equal to</option>
+                </select>
+            </div>
+            <div class="filter-section">
+                <label for="passPercentage" class="filter-label">% of Pass:</label>
+                <input type="number" id="passPercentage" class="filter-input" placeholder="Enter (e.g. 96.875)">
+            </div>
+
+            <!-- Filter Button -->
+            <button id="applyFilters" class="filter-input" style="max-width: 150px; ">Apply Filters</button>
+        </div>
+
+        <!-- Result Display -->
+        <div id="result"></div>
+    </main>
+
+    <script src="script.js"></script> <!-- Link to the JavaScript file -->
+</body>
+</html>
