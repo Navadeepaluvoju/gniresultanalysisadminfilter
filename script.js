@@ -17,6 +17,12 @@ async function fetchData() {
         teacherData = await response.json();
         console.log("Data loaded:", teacherData);
         
+        // Normalize data for consistent filtering
+        teacherData = teacherData.map(item => ({
+            ...item,
+            Section: normalizeSectionName(item.Section)
+        }));
+        
         // Populate filter options
         populateFilterOptions();
     } catch (error) {
@@ -24,14 +30,58 @@ async function fetchData() {
     }
 }
 
+// Function to normalize section names for consistency
+function normalizeSectionName(section) {
+    if (!section) return section;
+
+    // Remove leading and trailing spaces and convert to uppercase
+    section = section.trim().toUpperCase();
+
+    // Normalize spaces around hyphens
+    section = section.replace(/\s*-\s*/g, '-');
+
+    // Normalize section variations
+    if (section === 'AI&ML' || section === 'AI & ML' || section === 'AIML') {
+        return 'AIML';
+    } else if (section === 'AI & DS' || section === 'AIDS' || section === 'AI&DS') {
+        return 'AI & DS';
+    } else if (section.startsWith('CSE') && section !== 'CSE') {
+        return section; // Keep differentiated sections like CSE-1, CSE-2
+    } else if (section.startsWith('IT') && section !== 'IT') {
+        return section; // Keep differentiated sections like IT-2
+    } else if (section.startsWith('ECE') && section !== 'ECE') {
+        return section; // Keep differentiated sections like ECE-1, ECE-2
+    } else if (section.startsWith('EEE') && section !== 'EEE') {
+        return section; // Keep differentiated sections like EEE-1, EEE-2
+    } else if (section === 'CSE' || section === 'IT' || section === 'ECE' || section === 'EEE' || section === 'MECH' || section === 'CIVIL') {
+        return section; // Return major departments as is
+    } else if (section === 'CE') {
+        return 'CIVIL';
+    } else if (section === 'MECHANICAL') {
+        return 'MECH';
+    }
+    return section; // Return original if no match is found
+}
+
 // Populate filter dropdowns
 function populateFilterOptions() {
     const academicYears = [...new Set(teacherData.map(item => item["Academic Year"]))];
     const semesters = [...new Set(teacherData.map(item => item["Sem"]))];
+    
+    // Collect unique main departments while keeping differentiated sections intact
+    const sections = [];
+    teacherData.forEach(item => {
+        const section = item.Section;
+        if (section && !sections.includes(section)) {
+            sections.push(section);
+        }
+    });
 
     const academicYearSelect = document.getElementById('academicYear');
     const semesterSelect = document.getElementById('semester');
+    const departmentSelect = document.getElementById('department');
 
+    // Populate academic years
     academicYears.forEach(year => {
         const option = document.createElement('option');
         option.value = year;
@@ -39,11 +89,20 @@ function populateFilterOptions() {
         academicYearSelect.appendChild(option);
     });
 
+    // Populate semesters
     semesters.forEach(sem => {
         const option = document.createElement('option');
         option.value = sem;
         option.textContent = sem;
         semesterSelect.appendChild(option);
+    });
+
+    // Populate unique sections
+    sections.forEach(section => {
+        const option = document.createElement('option');
+        option.value = section;
+        option.textContent = section;
+        departmentSelect.appendChild(option);
     });
 }
 
@@ -54,7 +113,7 @@ document.getElementById('applyFilters').addEventListener('click', () => {
     filters.academicYear = document.getElementById('academicYear').value;
     filters.btechYear = document.getElementById('btechYear').value;
     filters.semester = document.getElementById('semester').value;
-    filters.department = document.getElementById('department').value; 
+    filters.department = document.getElementById('department').value.trim(); 
     filters.passComparison = document.getElementById('passComparison').value;
     filters.passPercentage = document.getElementById('passPercentage').value;
 
@@ -96,8 +155,17 @@ function applyFilters() {
         }
 
         // Filter by Department/Section
-        if (filters.department && !item.Section.startsWith(filters.department)) {
-            pass = false;
+        if (filters.department) {
+            const normalizedDepartment = normalizeSectionName(filters.department);
+            const normalizedItemSection = normalizeSectionName(item.Section);
+            
+            // If the main department (e.g., "ECE") is selected, match all corresponding sections (e.g., "ECE-1", "ECE-2", etc.)
+            if (
+                normalizedDepartment !== normalizedItemSection &&
+                !normalizedItemSection.startsWith(normalizedDepartment)
+            ) {
+                pass = false;
+            }
         }
 
         // Filter by % of Pass
