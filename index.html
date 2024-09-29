@@ -23,8 +23,8 @@
                 <label for="academicYear" class="filter-label">Academic Year:</label>
                 <select id="academicYear" class="filter-input">
                     <option value="">All Years</option>
-                    <option value="3">Last 3 Years</option> <!-- Added for 3 years -->
-                    <option value="5">Last 5 Years</option> <!-- Added for 5 years -->
+                    <option value="3">Last 3 Years</option>
+                    <option value="5">Last 5 Years</option>
                 </select>
             </div>
 
@@ -45,6 +45,10 @@
                 <label for="semester" class="filter-label">Semester:</label>
                 <select id="semester" class="filter-input">
                     <option value="">All Semesters</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
                 </select>
             </div>
 
@@ -95,5 +99,31 @@
     </main>
 
     <script src="script.js"></script> <!-- Link to the JavaScript file -->
+
+    <script>
+        // JavaScript to dynamically adjust % of Pass input
+        document.querySelectorAll('.filter-input').forEach(input => {
+            input.addEventListener('change', updatePassPercentage);
+        });
+
+        function updatePassPercentage() {
+            const academicYear = document.getElementById('academicYear').value;
+            const btechYear = document.getElementById('btechYear').value;
+            const semester = document.getElementById('semester').value;
+            const department = document.getElementById('department').value;
+
+            const passComparison = document.getElementById('passComparison').value;
+            const passPercentageInput = document.getElementById('passPercentage');
+
+            // Logic to enable or disable the pass percentage input
+            if (academicYear && btechYear && semester && department) {
+                passPercentageInput.disabled = false;
+                passPercentageInput.placeholder = "Enter percentage for selected filters";
+            } else {
+                passPercentageInput.disabled = true;
+                passPercentageInput.placeholder = "Complete all selections first";
+            }
+        }
+    </script>
 </body>
 </html>
