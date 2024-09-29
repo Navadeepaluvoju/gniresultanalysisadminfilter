@@ -11,10 +11,10 @@
 </head>
 <body>
     <header>
-        <h1 style="text-align: center; color: crimson;">Result Analysis with Custom Filters</h1>
+        <h1 style="text-align: center;color:crimson">Result Analysis with Custom Filters</h1>
     </header>
     <main>
-        <h3 style="text-align: center; padding: 20px; font-size: 24px;">Select Filters</h3>
+        <h3 style="text-align: center; padding: 20px;font-size: 24px;">Select Filters</h3>
 
         <!-- Filter Inputs -->
         <div class="filter-container white-box"> <!-- Added white-box class -->
@@ -23,8 +23,8 @@
                 <label for="academicYear" class="filter-label">Academic Year:</label>
                 <select id="academicYear" class="filter-input">
                     <option value="">All Years</option>
-                    <option value="3">Last 3 Years</option>
-                    <option value="5">Last 5 Years</option>
+                    <option value="3">Last 3 Years</option> <!-- Added for 3 years -->
+                    <option value="5">Last 5 Years</option> <!-- Added for 5 years -->
                 </select>
             </div>
 
@@ -45,10 +45,6 @@
                 <label for="semester" class="filter-label">Semester:</label>
                 <select id="semester" class="filter-input">
                     <option value="">All Semesters</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
                 </select>
             </div>
 
@@ -84,8 +80,7 @@
             </div>
             <div class="filter-section">
                 <label for="passPercentage" class="filter-label">% of Pass:</label>
-                <input type="number" id="passPercentage" class="filter-input" placeholder="Enter (e.g. 96.875)" min="0" max="100" step="0.01" required>
-                <small style="display: block; margin-top: 5px; font-size: 12px; color: grey;">Enter a value between 0 and 100.</small>
+                <input type="number" id="passPercentage" class="filter-input" placeholder="Enter (e.g. 96.875)">
             </div>
 
             <!-- Filter Button -->
@@ -99,31 +94,5 @@
     </main>
 
     <script src="script.js"></script> <!-- Link to the JavaScript file -->
-
-    <script>
-        // JavaScript to dynamically adjust % of Pass input
-        document.querySelectorAll('.filter-input').forEach(input => {
-            input.addEventListener('change', updatePassPercentage);
-        });
-
-        function updatePassPercentage() {
-            const academicYear = document.getElementById('academicYear').value;
-            const btechYear = document.getElementById('btechYear').value;
-            const semester = document.getElementById('semester').value;
-            const department = document.getElementById('department').value;
-
-            const passComparison = document.getElementById('passComparison').value;
-            const passPercentageInput = document.getElementById('passPercentage');
-
-            // Logic to enable or disable the pass percentage input
-            if (academicYear && btechYear && semester && department) {
-                passPercentageInput.disabled = false;
-                passPercentageInput.placeholder = "Enter percentage for selected filters";
-            } else {
-                passPercentageInput.disabled = true;
-                passPercentageInput.placeholder = "Complete all selections first";
-            }
-        }
-    </script>
 </body>
 </html>
