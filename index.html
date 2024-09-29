@@ -3,96 +3,546 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Filter</title>
-    <link rel="stylesheet" href="style.css"> <!-- Link to the CSS file -->
-    
-    <!-- Link to the favicon -->
-    <link rel="icon" href="gni_logo.png" type="image/png"> <!-- Ensure the type matches the format -->
+    <title>Dynamic Filter</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="gni_logo.png" type="image/png">
 </head>
 <body>
-    <header>
-        <h1 style="text-align: center;color:crimson">Result Analysis with Custom Filters</h1>
-    </header>
-    <main>
-        <h3 style="text-align: center; padding: 20px;font-size: 24px;">Select Filters</h3>
 
-        <!-- Filter Inputs -->
-        <div class="filter-container white-box"> <!-- Added white-box class -->
-            <!-- Academic Year Filter -->
-            <div class="filter-section">
-                <label for="academicYear" class="filter-label">Academic Year:</label>
-                <select id="academicYear" class="filter-input">
-                    <option value="">All Years</option>
-                    <option value="3">Last 3 Years</option> <!-- Added for 3 years -->
-                    <option value="5">Last 5 Years</option> <!-- Added for 5 years -->
-                </select>
-            </div>
+    <h1>
+        Result Analysis
+        <a href="https://gni-teachers-analysis.vercel.app/upload" class="upload-button">Converter</a>
+    </h1>
+    
 
-            <!-- B. Tech. Year Filter -->
-            <div class="filter-section">
-                <label for="btechYear" class="filter-label">B. Tech. Year:</label>
-                <select id="btechYear" class="filter-input">
-                    <option value="">All Years</option>
-                    <option value="I">I</option>
-                    <option value="II">II</option>
-                    <option value="III">III</option>
-                    <option value="IV">IV</option>
-                </select>
-            </div>
-
-            <!-- Semester Filter -->
-            <div class="filter-section">
-                <label for="semester" class="filter-label">Semester:</label>
-                <select id="semester" class="filter-input">
-                    <option value="">All Semesters</option>
-                </select>
-            </div>
-
-            <!-- Department Filter -->
-            <div class="filter-section">
-                <label for="department" class="filter-label">Department:</label>
-                <select id="department" class="filter-input">
-                    <option value="">All Departments</option>
-                    <option value="CE">CE</option>
-                    <option value="ME">ME</option>
-                    <option value="EEE">EEE</option>
-                    <option value="ECE">ECE</option>
-                    <option value="CSE">CSE</option>
-                    <option value="IT">IT</option>
-                    <option value="AIML">AIML</option>
-                    <option value="AI&amp;DS">AI&amp;DS</option>
-                    <option value="CS">CS</option>
-                    <option value="IOT">IOT</option>
-                    <option value="DS">DS</option>
-                </select>
-            </div>
-
-            <!-- Pass Percentage Filters -->
-            <div class="filter-section">
-                <label for="passComparison" class="filter-label">Pass Comparison:</label>
-                <select id="passComparison" class="filter-input">
-                    <option value="equal">Equal</option>
-                    <option value="greater">Greater than</option>
-                    <option value="greaterEqual">Greater than and equal to</option>
-                    <option value="less">Less than</option>
-                    <option value="lessEqual">Less than and equal to</option>
-                </select>
-            </div>
-            <div class="filter-section">
-                <label for="passPercentage" class="filter-label">% of Pass:</label>
-                <input type="number" id="passPercentage" class="filter-input" placeholder="Enter (e.g. 96.875)">
-            </div>
-
-            <!-- Filter Button -->
-            <div style="flex-basis: 100%; text-align: center;"> <!-- Center align the button -->
-                <button id="applyFilters" class="filter-input" style="max-width: 150px;">Apply Filters</button>
+    <div class="filter-container" id="filter-container">
+        <div class="filter-group">
+            <label>Academic Year:</label>
+            <div class="dropdown" id="academic-year-dropdown">
+                <div class="dropdown-button" onclick="toggleDropdown('academic-year-dropdown-content')">Select Academic Year</div>
+                <div class="dropdown-content" id="academic-year-dropdown-content"></div>
             </div>
         </div>
+        <div class="filter-group">
+            <label>B. Tech Year:</label>
+            <div class="dropdown" id="btech-year-dropdown">
+                <div class="dropdown-button" onclick="toggleDropdown('btech-year-dropdown-content')">Select B. Tech Year</div>
+                <div class="dropdown-content" id="btech-year-dropdown-content"></div>
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>Semester:</label>
+            <div class="dropdown" id="sem-dropdown">
+                <div class="dropdown-button" onclick="toggleDropdown('sem-dropdown-content')">Select Semester</div>
+                <div class="dropdown-content" id="sem-dropdown-content"></div>
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>Section:</label>
+            <div class="dropdown" id="section-dropdown">
+                <div class="dropdown-button" onclick="toggleDropdown('section-dropdown-content')">Select Section</div>
+                <div class="dropdown-content" id="section-dropdown-content"></div>
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>Name of the Subject:</label>
+            <div class="dropdown" id="subject-dropdown">
+                <div class="dropdown-button" onclick="toggleDropdown('subject-dropdown-content')">Select Subject</div>
+                <div class="dropdown-content" id="subject-dropdown-content">
+                    <input type="text" id="subject-search" oninput="debouncedFilterSubjects()" placeholder="Search subjects...">
+                    <div id="subject-checkboxes"></div>
+                    <div class="no-results" id="subject-no-results">No results found</div>
+                </div>
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>Name of the Teacher:</label>
+            <div class="dropdown" id="teacher-dropdown">
+                <div class="dropdown-button" onclick="toggleDropdown('teacher-dropdown-content')">Select Teacher</div>
+                <div class="dropdown-content" id="teacher-dropdown-content">
+                    <input type="text" id="teacher-search" oninput="debouncedFilterTeachers()" placeholder="Search teachers..." style="padding: 10px;">
+                    <div id="teacher-checkboxes"></div>
+                    <div class="no-results" id="teacher-no-results">No results found</div>
+                </div>
+            </div>
+        </div>
+        <div class="filter-group">
+            <label for="pass-rate-operator">Pass comparsion:</label>
+            <select id="pass-rate-operator"style="width: max-content; padding: 10px">
+                <option value="equal" > Equal</option>
+                <option value="greater">Greater than</option>
+                <option value="less">Less than</option>
+            </select>
 
-        <!-- Result Display -->
-        <div id="result"></div>
-    </main>
+        </div>
+        <div class="filter-group">
+            <label for="pass-rate-operator" >% of Pass :</label>
+            <input type="number" id="pass-rate-value" placeholder="Enter pass percentage"style="padding: 10px">
+        </div>
+    </div>
 
-    <script src="script.js"></script> <!-- Link to the JavaScript file -->
+    <button onclick="applyFilters()">Filter</button>
+
+    <table>
+        <thead>
+            <tr id="table-header">
+                <!-- Dynamic table headers will be generated here -->
+            </tr>
+        </thead>
+        <tbody id="data-body">
+            <!-- Filtered data will appear here -->
+        </tbody>
+    </table>
+
+    <script>
+        let data = []; // Data will be loaded from the JSON file
+        let firstItem = null;
+        let debounceTimer;
+
+        // Load the JSON data from a local file or a server
+        async function loadData() {
+            const response = await fetch('teacherData.json'); // Path to your JSON file
+            data = await response.json();
+            firstItem = data[0];
+
+            generateCheckboxes();
+            generateTableHeaders();
+            renderTable(data);
+        }
+
+        // Generate checkboxes for unique values in the specified fields
+        function generateCheckboxes() {
+            const uniqueValues = {
+                "Academic Year": new Set(),
+                "B. Tech. Year": new Set(),
+                "Sem": new Set(),
+                "Section": new Set(),
+                "Name of the subject": new Set(),
+                "Name of the teacher": new Set() // Added teacher names
+            };
+
+            // Extract unique values and strip spaces
+            data.forEach(item => {
+                uniqueValues["Academic Year"].add(item["Academic Year"].trim());
+                uniqueValues["B. Tech. Year"].add(item["B. Tech. Year"].trim());
+                uniqueValues["Sem"].add(item["Sem"].toString().trim());
+                uniqueValues["Section"].add(item["Section"].trim());
+                uniqueValues["Name of the subject"].add(item["Name of the subject"].trim());
+                uniqueValues["Name of the teacher"].add(item["Name of the teacher"].trim()); // Added this line
+            });
+
+            // Populate checkboxes with stripped values
+            populateCheckboxes('academic-year-dropdown-content', Array.from(uniqueValues["Academic Year"]));
+            populateCheckboxes('btech-year-dropdown-content', Array.from(uniqueValues["B. Tech. Year"]));
+            populateCheckboxes('sem-dropdown-content', Array.from(uniqueValues["Sem"]));
+            populateCheckboxes('section-dropdown-content', Array.from(uniqueValues["Section"]));
+            populateCheckboxes('subject-checkboxes', Array.from(uniqueValues["Name of the subject"]));
+            populateCheckboxes('teacher-checkboxes', Array.from(uniqueValues["Name of the teacher"])); // Populate teacher checkboxes
+        }
+
+        // Populate checkboxes in the dropdown with unique options
+        function populateCheckboxes(id, values) {
+            const container = document.getElementById(id);
+            container.innerHTML = ""; // Clear existing checkboxes
+            values.sort(); // Optional: Sort the values alphabetically
+            values.forEach(value => {
+                const label = document.createElement('label');
+                label.innerHTML = `<input type="checkbox" value="${value}" onchange="updateDropdownButton('${id}')"> ${value}`;
+                container.appendChild(label);
+            });
+        }
+
+        // Toggle the dropdown visibility
+        function toggleDropdown(dropdownId) {
+            const dropdowns = document.querySelectorAll('.dropdown-content');
+            dropdowns.forEach(dropdown => {
+                if (dropdown.id !== dropdownId) {
+                    dropdown.classList.remove('show'); // Close other dropdowns
+                }
+            });
+            document.getElementById(dropdownId).classList.toggle('show');
+        }
+
+        // Update the dropdown button text based on selected checkboxes
+        function updateDropdownButton(dropdownId) {
+            const checkboxes = document.querySelectorAll(`#${dropdownId} input[type="checkbox"]`);
+            const selectedValues = Array.from(checkboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
+            const buttonText = selectedValues.length > 0 ? selectedValues.join(', ') : 'Select';
+            document.querySelector(`#${dropdownId.replace('-content', '')} .dropdown-button`).textContent = buttonText;
+        }
+
+        // Debounce the search input for better performance
+        function debouncedFilterSubjects() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(filterSubjects, 300); // Wait for 300ms before executing
+        }
+
+        // Filter subjects based on search input
+        function filterSubjects() {
+            const searchValue = document.getElementById('subject-search').value.toLowerCase();
+            const checkboxesContainer = document.getElementById('subject-checkboxes');
+            const noResults = document.getElementById('subject-no-results');
+            const checkboxes = checkboxesContainer.querySelectorAll('label');
+
+            let hasResults = false;
+
+            checkboxes.forEach(label => {
+                const checkbox = label.querySelector('input[type="checkbox"]');
+                const subjectName = checkbox.value.toLowerCase();
+                if (subjectName.includes(searchValue)) {
+                    label.style.display = 'block';
+                    hasResults = true;
+                } else {
+                    label.style.display = 'none';
+                }
+            });
+
+            noResults.style.display = hasResults ? 'none' : 'block';
+        }
+
+        // Debounce the search input for better performance for teachers
+        function debouncedFilterTeachers() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(filterTeachers, 300); // Wait for 300ms before executing
+        }
+
+        // Filter teachers based on search input
+        function filterTeachers() {
+            const searchValue = document.getElementById('teacher-search').value.toLowerCase();
+            const checkboxesContainer = document.getElementById('teacher-checkboxes');
+            const noResults = document.getElementById('teacher-no-results');
+            const checkboxes = checkboxesContainer.querySelectorAll('label');
+
+            let hasResults = false;
+
+            checkboxes.forEach(label => {
+                const checkbox = label.querySelector('input[type="checkbox"]');
+                const teacherName = checkbox.value.toLowerCase();
+                if (teacherName.includes(searchValue)) {
+                    label.style.display = 'block';
+                    hasResults = true;
+                } else {
+                    label.style.display = 'none';
+                }
+            });
+
+            noResults.style.display = hasResults ? 'none' : 'block';
+        }
+
+        // Apply filters to the data based on selected options
+        function applyFilters() {
+            
+            let filteredData = data; // Start with the full data set
+
+            // Filter by Academic Year
+            const academicYearFilters = getCheckedValues('academic-year-dropdown-content');
+            if (academicYearFilters.length > 0) {
+                filteredData = filteredData.filter(item => academicYearFilters.includes(item["Academic Year"].trim()));
+            }
+
+            // Filter by B. Tech Year
+            const btechYearFilters = getCheckedValues('btech-year-dropdown-content');
+            if (btechYearFilters.length > 0) {
+                filteredData = filteredData.filter(item => btechYearFilters.includes(item["B. Tech. Year"].trim()));
+            }
+
+            // Filter by Semester
+            const semFilters = getCheckedValues('sem-dropdown-content');
+            if (semFilters.length > 0) {
+                filteredData = filteredData.filter(item => semFilters.includes(item["Sem"].toString().trim()));
+            }
+
+            // Filter by Section
+            const sectionFilters = getCheckedValues('section-dropdown-content');
+            if (sectionFilters.length > 0) {
+                filteredData = filteredData.filter(item => sectionFilters.includes(item["Section"].trim()));
+            }
+
+            // Filter by Name of the Subject
+            const subjectFilters = getCheckedValues('subject-checkboxes');
+            if (subjectFilters.length > 0) {
+                filteredData = filteredData.filter(item => subjectFilters.includes(item["Name of the subject"].trim()));
+            }
+
+            // Filter by Name of the Teacher
+            const teacherFilters = getCheckedValues('teacher-checkboxes');
+            if (teacherFilters.length > 0) {
+                filteredData = filteredData.filter(item => teacherFilters.includes(item["Name of the teacher"].trim()));
+            }
+
+            // Filter by Pass Rate
+            const passRateOperator = document.getElementById('pass-rate-operator').value;
+            const passRateValue = parseFloat(document.getElementById('pass-rate-value').value);
+            if (!isNaN(passRateValue)) {
+                filteredData = filteredData.filter(item => {
+                    const passRate = parseFloat(item["Pass Rate"]);
+                    if (passRateOperator === 'equal') {
+                        return passRate === passRateValue;
+                    } else if (passRateOperator === 'greater') {
+                        return passRate > passRateValue;
+                    } else if (passRateOperator === 'less') {
+                        return passRate < passRateValue;
+                    }
+                    return true;
+                });
+            }
+
+            renderTable(filteredData); // Render the filtered data
+        }
+
+        // Get checked values from the checkboxes
+        function getCheckedValues(containerId) {
+            const checkboxes = document.querySelectorAll(`#${containerId} input[type="checkbox"]`);
+            return Array.from(checkboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
+        }
+
+        // Render the table based on the data
+        function renderTable(dataToRender) {
+            const tableBody = document.getElementById('data-body');
+            tableBody.innerHTML = ""; // Clear existing table data
+
+            dataToRender.forEach(item => {
+                const row = document.createElement('tr');
+                for (const key in firstItem) {
+                    const cell = document.createElement('td');
+                    cell.textContent = item[key];
+                    row.appendChild(cell);
+                }
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Generate table headers based on the first item in the data
+        function generateTableHeaders() {
+            const tableHeader = document.getElementById('table-header');
+            tableHeader.innerHTML = ""; // Clear existing headers
+
+            for (const key in firstItem) {
+                const th = document.createElement('th');
+                th.textContent = key;
+                tableHeader.appendChild(th);
+            }
+        }
+
+        // Initialize data loading when the window loads
+        window.onload = loadData;
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+        .pass-rate-filter {
+            display: flex; /* Use flex to lay out children in a row */
+            align-items: center; /* Align items vertically in the center */
+            gap: 10px; /* Add some space between elements */
+        }
+        .top-right-button-container {
+            position: absolute;
+            top: 20px; /* Distance from the top of the page */
+            right: 20px; /* Distance from the right of the page */
+        }
+        
+        label {
+            margin-right: 5px; /* Optional: Add space between the label and the dropdown */
+        }
+        .button-container {
+            position: relative;
+            width: 100%; /* Ensure the container spans the full width */
+            display: flex;
+            justify-content: flex-end; /* Align the button to the right */
+            margin-top: 20px; /* Add some spacing from the content above */
+        }
+        
+        .upload-button {
+            padding: 10px 20px; /* Add padding to make it look like a button */
+            background-color: #007bff; /* Blue background color */
+            color: #fff; /* White text color */
+            text-decoration: none; /* Remove the default underline for the link */
+            border-radius: 5px; /* Rounded corners */
+            border: none;
+            font-size: 16px; /* Adjust the font size */
+            cursor: pointer; /* Change cursor to pointer when hovered */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+        
+        .upload-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        
+        
+        #pass-rate-operator,
+        #pass-rate-value {
+            padding: 10px; /* Add padding to make it consistent */
+            width: max-content; /* Adjust width to fit content */
+            border-radius: 4px; /* Add border radius for a better look */
+            border: 1px solid #ccc; /* Optional: Add border */
+        }
+        .pass-rate-filter {
+            display: inline-flex; /* Use inline-flex to ensure the container only takes up necessary width */
+            align-items: center; /* Vertically aligns items in the center */
+            gap: 10px; /* Adds space between the elements */
+        }
+        
+        label {
+            margin-right: 5px; /* Optional: Add space between the label and the dropdown */
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-container {
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        .dropdown-content::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for WebKit browsers (e.g., Chrome, Safari) */
+        }
+        
+        /* For Firefox */
+        .dropdown-content {
+            scrollbar-width: none; /* Hide scrollbar in Firefox */
+        }
+        h1 {
+            display: flex; /* Use flexbox to align items */
+            justify-content: space-between; /* Ensure there is space between heading and button */
+            align-items: center; /* Vertically center the items */
+            margin-bottom: 20px; /* Space below the heading */
+        }
+        
+        .upload-button {
+            padding: 10px 20px; /* Button padding */
+            background-color: #007bff; /* Blue background color */
+            color: #fff; /* White text color */
+            text-decoration: none; /* Remove underline */
+            border-radius: 5px; /* Rounded corners */
+            border: none;
+            font-size: 16px; /* Font size */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s; /* Smooth hover effect */
+            margin-left: 10px; /* Space between heading and button */
+        }
+        
+        .upload-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        
+
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            margin-right: 10px;
+            display: hover;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .dropdown-button {
+            cursor: pointer;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+        }
+        
+        .dropdown-content {
+            display: none; /* Initially hidden */
+            position: absolute;
+            background-color: #fff;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            z-index: 1;
+            display: none; /* Initially hidden */
+            position: absolute;
+            background-color: white;
+            min-width: 200px;
+            border: 1px solid #ccc;
+            z-index: 1;
+            max-height: 200px;
+            overflow: hidden;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 200px;
+            border: 1px solid #ccc;
+            z-index: 1;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+        .dropdown-content:hover {
+            overflow-y: auto; /* Allow scrolling only when the user hovers */
+        }
+        .dropdown-button {
+            padding: 10px;
+            background-color: #fffcfc;
+            color: rgb(0, 0, 0);
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+        }
+        button {
+            font-size: 18px; /* Increase font size */
+            padding: 15px 30px; /* Increase padding for a bigger button */
+            background-color: red; /* Set background color to red */
+            color: white; /* Set text color to white for contrast */
+            border: none; /* Remove default border */
+            border-radius: 5px; /* Add slight rounding to corners */
+            cursor: pointer; /* Change cursor to pointer */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+        
+        button:hover {
+            background-color: darkred; /* Change background on hover */
+        }
+        
+        .dropdown-content label {
+            display: block;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .dropdown-content label:hover {
+            background-color: #f1f1f1;
+        }
+
+        .no-results {
+            display: none;
+            padding: 8px;
+            color: #ff0000;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+
 </body>
 </html>
